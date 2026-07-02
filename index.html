@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EMR Change Request - with Dashboard</title>
+    <style>
+        /* ── Reset & Base ── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Khmer OS Muol Light', 'Khmer OS', 'Moul', 'Noto Sans Khmer', 'Segoe UI', sans-serif;
+            background: #eef2f7;
+            padding: 24px 16px;
+            color: #1e2a41;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(0, 20, 40, 0.12);
+            padding: 32px 28px;
+            transition: 0.25s;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 16px;
+            }
+            body {
+                padding: 12px 8px;
+            }
+        }
+
+        /* ── Header ── */
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #1a5276;
+            padding-bottom: 20px;
+            margin-bottom: 28px;
+        }
+        .header .royal {
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: #6b7a8f;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .header .hospital {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a5276;
+            margin: 4px 0 2px;
+        }
+        .header .title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0b2b44;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        .header .title-en {
+            font-size: 14px;
+            font-weight: 400;
+            color: #5d6f83;
+            font-style: italic;
+        }
+
+        /* ── Role Bar ── */
+        .role-bar {
+            background: #f0f4fb;
+            border: 1.5px solid #c5d9e8;
+            border-radius: 40px;
+            padding: 10px 20px;
+            margin: -8px 0 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            padding: 6px 18px;
+            border-radius: 40px;
+            background: #e2e8f0;
+            color: #2c3e50;
+        }
+        .role-badge.staff {
+            background: #d5e8f5;
+            color: #1a5276;
+        }
+        .role-badge.support {
+            background: #fdebd0;
+            color: #a04000;
+        }
+        .role-badge .icon {
+            font-size: 18px;
+        }
+        .role-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        .role-actions .btn-sm {
+            padding: 6px 18px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+        .btn-sm.lock {
+            background: #b8cee0;
+            color: #1e2a41;
+        }
+        .btn-sm.lock:hover {
+            background: #9bb6cc;
+        }
+        .btn-sm.unlock {
+            background: #1a5276;
+            color: #fff;
+        }
+        .btn-sm.unlock:hover {
+            background: #0f3e5a;
+        }
+        .btn-sm.support-active {
+            background: #d35400;
+            color: #fff;
+        }
+        .btn-sm.support-active:hover {
+            background: #a04000;
+        }
+        .btn-sm.view-btn {
+            background: #2e7d32;
+            color: #fff;
+        }
+        .btn-sm.view-btn:hover {
+            background: #1b5e20;
+        }
+        .role-hint {
+            font-size: 13px;
+            color: #5d6f83;
+            font-weight: 500;
+        }
+
+        /* ── Sections ── */
+        .section {
+            margin-top: 28px;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px 22px 24px;
+            background: #fafcfe;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a5276;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .section-title .sub {
+            font-weight: 400;
+            font-size: 14px;
+            color: #4a5f73;
+        }
+        .section-title .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a5276;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            margin-right: 6px;
+            flex-shrink: 0;
+        }
+        .field-group {
+            margin-bottom: 16px;
+        }
+        .field-group.row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 24px;
+        }
+        @media (max-width: 550px) {
+            .field-group.row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+        .field-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 4px;
+            color: #1e2a41;
+        }
+        .field-group label .required {
+            color: #c0392b;
+            margin-left: 2px;
+        }
+        .field-group label .hint {
+            font-weight: 400;
+            font-size: 13px;
+            color: #6b7a8f;
+        }
+        .field-group input,
+        .field-group select,
+        .field-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 15px;
+            font-family: inherit;
+            border: 1.5px solid #d0d9e6;
+            border-radius: 10px;
+            background: #ffffff;
+            transition: 0.2s;
+            color: #1e2a41;
+        }
+        .field-group input:focus,
+        .field-group select:focus,
+        .field-group textarea:focus {
+            border-color: #2e86c1;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(46, 134, 193, 0.12);
+        }
+        .field-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .field-group .help-text {
+            font-size: 13px;
+            color: #5d6f83;
+            margin-top: 2px;
+        }
+        .field-group input:disabled,
+        .field-group select:disabled,
+        .field-group textarea:disabled {
+            background: #eef2f7;
+            color: #3d4f63;
+            cursor: not-allowed;
+            border-color: #d0d9e6;
+            opacity: 0.85;
+        }
+        .options-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 28px;
+            padding-top: 4px;
+        }
+        .options-grid label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 15px;
+            cursor: pointer;
+            color: #1e2a41;
+        }
+        .options-grid input[type="checkbox"],
+        .options-grid input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #1a5276;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .options-grid input:disabled {
+            accent-color: #8ba0b5;
+            cursor: not-allowed;
+        }
+        .options-grid .other-input {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .options-grid .other-input input {
+            width: 200px;
+            padding: 6px 12px;
+            font-size: 14px;
+            border: 1.5px solid #d0d9e6;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .options-grid .other-input input:disabled {
+            background: #eef2f7;
+        }
+        .signature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 30px;
+            margin-top: 6px;
+        }
+        @media (max-width: 550px) {
+            .signature-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+        }
+        .signature-box {
+            background: #f4f8fc;
+            border-radius: 12px;
+            padding: 16px 18px 18px;
+            border: 1px dashed #b8cee0;
+        }
+        .signature-box .label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a5276;
+            margin-bottom: 8px;
+        }
+        .signature-box .field-group {
+            margin-bottom: 8px;
+        }
+        .signature-box .field-group:last-child {
+            margin-bottom: 0;
+        }
+        .signature-box input {
+            background: #ffffff;
+        }
+        .core-team {
+            background: #f0f5fb;
+            border: 2px solid #b8cee0;
+            border-radius: 14px;
+            padding: 18px 22px 22px;
+            margin-top: 28px;
+            transition: 0.2s;
+        }
+        .core-team .section-title {
+            color: #0b3b5a;
+        }
+        .core-team .badge-core {
+            display: inline-block;
+            background: #1a5276;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 16px;
+            border-radius: 40px;
+            letter-spacing: 0.5px;
+        }
+        .core-team .field-group label {
+            color: #1a3b55;
+        }
+        .core-team .options-grid label {
+            color: #1a3b55;
+        }
+        .core-team input:disabled,
+        .core-team select:disabled,
+        .core-team textarea:disabled {
+            background: #e2eaf2;
+            color: #4b637a;
+            cursor: not-allowed;
+            border-color: #c5d9e8;
+            opacity: 0.8;
+        }
+        .core-team .field-group input[type="radio"]:disabled {
+            accent-color: #8ba0b5;
+            cursor: not-allowed;
+        }
+        .core-team.support-active input:not(:disabled),
+        .core-team.support-active select:not(:disabled),
+        .core-team.support-active textarea:not(:disabled) {
+            background: #ffffff;
+            border-color: #1a5276;
+        }
+
+        /* ── Buttons ── */
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 30px;
+            justify-content: flex-end;
+            border-top: 2px solid #e8edf4;
+            padding-top: 28px;
+        }
+        .btn {
+            padding: 12px 36px;
+            font-size: 17px;
+            font-weight: 700;
+            font-family: inherit;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: #1a5276;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #0f3e5a;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(26, 82, 118, 0.30);
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-secondary {
+            background: #e8edf4;
+            color: #1e2a41;
+        }
+        .btn-secondary:hover {
+            background: #d5dee9;
+        }
+        .btn-success {
+            background: #2e7d32;
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #1b5e20;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+        }
+        .btn-danger {
+            background: #c0392b;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #a93226;
+        }
+
+        /* ── Message ── */
+        .message {
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-top: 16px;
+            display: none;
+        }
+        .message.show {
+            display: block;
+        }
+        .message.success {
+            background: #d5f0e0;
+            color: #0d5e3a;
+            border: 1px solid #8fc9aa;
+        }
+        .message.error {
+            background: #fde8e8;
+            color: #a93226;
+            border: 1px solid #f5b7b1;
+        }
+        .message.loading {
+            background: #eaf2f8;
+            color: #1a5276;
+            border: 1px solid #b8cee0;
+            display: block;
+        }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        hr {
+            border: none;
+            border-top: 1.5px solid #e2e8f0;
+            margin: 18px 0;
+        }
+
+        /* ── Request List View ── */
+        #requestListView {
+            display: none;
+            margin-top: 20px;
+        }
+        #requestListView.active {
+            display: block;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid #d0d9e6;
+            border-radius: 12px;
+            background: #fff;
+            margin: 16px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 800px;
+        }
+        table th {
+            background: #1a5276;
+            color: #fff;
+            padding: 8px 10px;
+            text-align: left;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+            max-width: 200px;
+            word-break: break-word;
+        }
+        table tr:nth-child(even) {
+            background: #f6faff;
+        }
+        table tr:hover {
+            background: #eaf2f8;
+        }
+        .list-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 12px 0;
+            align-items: center;
+        }
+        .list-stats {
+            font-size: 14px;
+            color: #1a5276;
+            font-weight: 600;
+            margin-right: auto;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: #1a5276;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .back-link:hover {
+            color: #0f3e5a;
+        }
+        .empty-message {
+            padding: 30px;
+            text-align: center;
+            color: #5d6f83;
+            font-size: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .header .title {
+                font-size: 18px;
+            }
+            .section {
+                padding: 16px 14px;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 14px;
+            }
+            .actions {
+                flex-direction: column-reverse;
+            }
+            .options-grid {
+                gap: 8px 16px;
+            }
+            .options-grid .other-input input {
+                width: 140px;
+            }
+            .role-bar {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .role-actions {
+                justify-content: center;
+            }
+            table {
+                font-size: 12px;
+                min-width: 600px;
+            }
+            table th,
+            table td {
+                padding: 4px 6px;
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0.5in;
+            }
+            .container {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                padding: 24px;
+            }
+            .btn,
+            .actions,
+            .role-bar {
+                display: none !important;
+            }
+            .core-team {
+                background: #f5f5f5 !important;
+                border: 1px solid #aaa !important;
+            }
+            .signature-box {
+                border: 1px solid #ccc !important;
+                background: #fafafa !important;
+            }
+            .field-group input,
+            .field-group select,
+            .field-group textarea {
+                border: 1px solid #bbb !important;
+                background: #fff !important;
+            }
+            .message {
+                display: none !important;
+            }
+            #requestListView {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div class="royal">ព្រះរាជាណាចក្រកម្ពុជា</div>
+            <div style="font-size:15px; font-weight:500; color:#2c3e50;">ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+            <div class="hospital">មន្ទីរពេទ្យបង្អែកខេត្តកំពង់ឆ្នាំង</div>
+            <div class="title">
+                ទម្រង់ស្នើសុំកែប្រែ ឬបន្ថែមទិន្នន័យ/មុខងារក្នុងប្រព័ន្ធ EMR
+                <div class="title-en">EMR System Modification / Addition Request Form</div>
+            </div>
+        </div>
+
+        <!-- ─── ROLE BAR ─── -->
+        <div class="role-bar" id="roleBar">
+            <div class="role-badge staff" id="roleBadge">
+                <span class="icon">👤</span>
+                <span id="roleLabel">ប្រតិបត្តិករ (បំពេញសំណើ)</span>
+            </div>
+            <div class="role-actions">
+                <span class="role-hint" id="roleHint">បំពេញព័ត៌មានផ្នែកទី ១–៣</span>
+                <button class="btn-sm unlock" id="switchRoleBtn">🔐 ប្តូរទៅក្រុមគាំទ្រ</button>
+                <button class="btn-sm view-btn" id="viewRequestsBtn" style="display:none;">📋 មើលសំណើទាំងអស់</button>
+            </div>
+        </div>
+
+        <!-- ─── FORM VIEW ─── -->
+        <div id="formView">
+            <form id="requestForm" novalidate>
+                <!-- PART 1: Requester Information -->
+                <div class="section" id="part1">
+                    <div class="section-title">
+                        <span class="num">១</span>
+                        ព័ត៌មានអ្នកស្នើសុំ
+                        <span class="sub">(Requester Information)</span>
+                    </div>
+                    <div class="field-group">
+                        <label for="requesterName">ឈ្មោះអ្នកស្នើសុំ <span class="required">*</span></label>
+                        <input type="text" id="requesterName" name="requesterName" placeholder="សូមបញ្ចូលឈ្មោះពេញ" required />
+                    </div>
+                    <div class="field-group">
+                        <label for="requesterRole">តួនាទី <span class="required">*</span></label>
+                        <select id="requesterRole" name="requesterRole" required>
+                            <option value="">— សូមជ្រើសរើស —</option>
+                            <option value="វេជ្ជបណ្ឌិត">វេជ្ជបណ្ឌិត</option>
+                            <option value="គិលានុបដ្ឋាក">គិលានុបដ្ឋាក</option>
+                            <option value="ឆ្មប">ឆ្មប</option>
+                            <option value="ផ្សេងៗ">ផ្សេងៗ</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="department">ផ្នែក / វួដ <span class="required">*</span></label>
+                        <input type="text" id="department" name="department" placeholder="ឧ. ផ្នែកសម្ភព, វួដទូទៅ" required />
+                    </div>
+                    <div class="field-group row">
+                        <div>
+                            <label for="phone">លេខទូរស័ព្ទ / Telegram <span class="required">*</span></label>
+                            <input type="text" id="phone" name="phone" placeholder="០៩៨ ៧៦ ៥៤ ៣២" required />
+                        </div>
+                        <div>
+                            <label for="requestDate">កាលបរិច្ឆេទស្នើសុំ <span class="required">*</span></label>
+                            <input type="date" id="requestDate" name="requestDate" required />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PART 2: Type of Request -->
+                <div class="section" id="part2">
+                    <div class="section-title">
+                        <span class="num">២</span>
+                        ប្រភេទនៃការស្នើសុំ
+                        <span class="sub">(Type of Request)</span>
+                        <span style="font-size:13px; font-weight:400; color:#5d6f83; margin-left:6px;">— សូមគូសសញ្ញា (✓)</span>
+                    </div>
+                    <div class="options-grid">
+                        <label><input type="checkbox" name="requestType" value="បង្កើតថ្មី" /> ស្នើសុំបង្កើតទម្រង់ ឬមុខងារថ្មី</label>
+                        <label><input type="checkbox" name="requestType" value="កែសម្រួល" /> ស្នើសុំកែសម្រួលទម្រង់ដែលមានស្រាប់</label>
+                        <label><input type="checkbox" name="requestType" value="លុបចោល" /> ស្នើសុំលុបចោលទម្រង់ ឬព័ត៌មានដែលមានស្រាប់</label>
+                        <div class="other-input">
+                            <label style="display:flex;align-items:center;gap:6px;font-weight:500;">
+                                <input type="checkbox" name="requestType" value="ផ្សេងៗ" id="otherTypeCheck" />
+                                ផ្សេងៗ
+                            </label>
+                            <input type="text" id="otherTypeText" name="otherTypeText" placeholder="សូមបញ្ជាក់..." style="width:200px;" disabled />
+                        </div>
+                    </div>
+                    <div class="help-text" style="margin-top:6px;">អាចជ្រើសរើសច្រើនប្រភេទ</div>
+                </div>
+
+                <!-- PART 3: Details of Request -->
+                <div class="section" id="part3">
+                    <div class="section-title">
+                        <span class="num">៣</span>
+                        ព័ត៌មានលម្អិតនៃសំណើ
+                        <span class="sub">(Details of Request)</span>
+                    </div>
+                    <div class="field-group">
+                        <label for="location">១. តើសំណើនេះស្ថិតនៅចំណុចណា ឬម៉ូឌុលណា នៃប្រព័ន្ធ EMR? <span class="required">*</span>
+                            <span class="hint">(ឧ. នៅក្នុងទម្រង់វាយតម្លៃអ្នកជំងឺសង្គ្រោះបន្ទាន់...)</span>
+                        </label>
+                        <textarea id="location" name="location" rows="2" required placeholder="សូមបញ្ជាក់ទីតាំង ឬម៉ូឌុល..."></textarea>
+                    </div>
+                    <div class="field-group">
+                        <label for="description">២. សូមពិពណ៌នាលម្អិតអំពីអ្វីដែលលោកអ្នកចង់ឱ្យមានការផ្លាស់ប្តូរ ឬបន្ថែមថ្មី <span class="required">*</span></label>
+                        <textarea id="description" name="description" rows="4" required placeholder="សូមពណ៌នាឲ្យបានច្បាស់លាស់..."></textarea>
+                    </div>
+                    <div class="field-group">
+                        <label for="benefits">៣. តើការផ្លាស់ប្តូរ ឬបន្ថែមនេះ មានសារៈសំខាន់ និងផ្តល់អត្ថប្រយោជន៍អ្វីខ្លះ? <span class="required">*</span>
+                            <span class="hint">(ឧ. ដើម្បីសម្រួលដល់លំហូរការងារ, សុវត្ថិភាពអ្នកជំងឺ...)</span>
+                        </label>
+                        <textarea id="benefits" name="benefits" rows="3" required placeholder="សូមបញ្ជាក់អត្ថប្រយោជន៍..."></textarea>
+                    </div>
+                    <div class="field-group">
+                        <label style="margin-bottom:6px;">៤. ឯកសារភ្ជាប់ (Attachments)</label>
+                        <div class="options-grid">
+                            <label><input type="radio" name="attachments" value="មាន" /> មានភ្ជាប់គំរូទម្រង់ (Mockup) ឬរូបថតអេក្រង់</label>
+                            <label><input type="radio" name="attachments" value="គ្មាន" checked /> គ្មានឯកសារភ្ជាប់</label>
+                        </div>
+                        <div class="help-text">ប្រសិនបើមាន សូមភ្ជាប់ឯកសារយោងតាមរយៈ Telegram ឬអ៊ីមែល</div>
+                    </div>
+                </div>
+
+                <!-- SIGNATURES -->
+                <div class="section" id="partSign" style="background:#f6faff; border-color:#c5d9e8;">
+                    <div class="section-title" style="color:#0b3b5a;">
+                        ✍️ ហត្ថលេខា និងការអនុម័ត
+                        <span class="sub">(Signatures &amp; Approval)</span>
+                    </div>
+                    <div class="signature-grid">
+                        <div class="signature-box">
+                            <div class="label">📌 អ្នកស្នើសុំ <span class="required">*</span></div>
+                            <div class="field-group">
+                                <label for="sigRequesterName">ឈ្មោះ</label>
+                                <input type="text" id="sigRequesterName" name="sigRequesterName" placeholder="ឈ្មោះអ្នកស្នើសុំ" required />
+                            </div>
+                            <div class="field-group">
+                                <label for="sigRequesterDate">កាលបរិច្ឆេទ</label>
+                                <input type="date" id="sigRequesterDate" name="sigRequesterDate" required />
+                            </div>
+                        </div>
+                        <div class="signature-box">
+                            <div class="label">📌 ប្រធានផ្នែក / វួដ <span class="required">*</span></div>
+                            <div class="field-group">
+                                <label for="sigHeadName">ឈ្មោះ</label>
+                                <input type="text" id="sigHeadName" name="sigHeadName" placeholder="ឈ្មោះប្រធានផ្នែក/វួដ" required />
+                            </div>
+                            <div class="field-group">
+                                <label for="sigHeadDate">កាលបរិច្ឆេទ</label>
+                                <input type="date" id="sigHeadDate" name="sigHeadDate" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="help-text" style="margin-top:12px; font-style:italic;">* ការបញ្ជូនសំណើនេះ ត្រូវមានការឯកភាពពីប្រធានផ្នែក/វួដ</div>
+                </div>
+
+                <!-- PART 4: EMR Core Team -->
+                <div class="core-team" id="part4">
+                    <div class="section-title" style="margin-bottom:8px;">
+                        <span class="badge-core">សម្រាប់ក្រុមការងារបង្គោល EMR</span>
+                        <span style="font-weight:400; font-size:15px; color:#1a3b55; margin-left:6px;">
+                            (For EMR Core Team Use Only)
+                        </span>
+                    </div>
+                    <p style="font-size:14px; color:#2c5282; margin-bottom:12px; background:#e3edf5; padding:8px 14px; border-radius:8px;">
+                        ⚠️ ផ្នែកនេះសម្រាប់ប្រើប្រាស់ដោយក្រុមការងារបង្គោលប៉ុណ្ណោះ — បើកដំណើរការដោយប្តូរទៅ "Support Mode"។
+                    </p>
+
+                    <div class="field-group row" style="grid-template-columns:1fr 1fr 1fr;">
+                        <div>
+                            <label>កាលបរិច្ឆេទទទួលបាន</label>
+                            <input type="date" id="coreReceivedDate" name="coreReceivedDate" disabled />
+                        </div>
+                        <div>
+                            <label>ទទួលដោយ (លេខាធិការ)</label>
+                            <input type="text" id="coreReceivedBy" name="coreReceivedBy" value="លោក ហ៊ាន សុផានិត" disabled />
+                        </div>
+                        <div>
+                            <label>ហត្ថលេខា</label>
+                            <input type="text" id="coreSignature" name="coreSignature" placeholder="______________" disabled />
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
+                        <div>
+                            <label style="font-weight:600; font-size:14px; color:#0b3b5a;">ផ្នែកគ្លីនិក (វេជ្ជបណ្ឌិត យៀប គង់)</label>
+                            <div class="options-grid" style="gap:6px 16px; padding-top:2px;">
+                                <label><input type="radio" name="coreClin" value="ឯកភាព" disabled /> ឯកភាព</label>
+                                <label><input type="radio" name="coreClin" value="មិនឯកភាព" disabled /> មិនឯកភាព</label>
+                            </div>
+                            <input type="text" id="coreClinReason" placeholder="មូលហេតុ..." disabled style="width:100%; padding:6px 10px; border:1px solid #d0d9e6; border-radius:6px; margin-top:4px; background:#f8fafc;" />
+                        </div>
+                        <div>
+                            <label style="font-weight:600; font-size:14px; color:#0b3b5a;">ផ្នែកថែទាំ (លោកស្រី ជូ សុភក្ត្រា)</label>
+                            <div class="options-grid" style="gap:6px 16px; padding-top:2px;">
+                                <label><input type="radio" name="coreNurse" value="ឯកភាព" disabled /> ឯកភាព</label>
+                                <label><input type="radio" name="coreNurse" value="មិនឯកភាព" disabled /> មិនឯកភាព</label>
+                            </div>
+                            <input type="text" id="coreNurseReason" placeholder="មូលហេតុ..." disabled style="width:100%; padding:6px 10px; border:1px solid #d0d9e6; border-radius:6px; margin-top:4px; background:#f8fafc;" />
+                        </div>
+                        <div>
+                            <label style="font-weight:600; font-size:14px; color:#0b3b5a;">ផ្នែកបច្ចេកទេស IT (លោក ហ៊ាន សុផានិត)</label>
+                            <div class="options-grid" style="gap:6px 16px; padding-top:2px;">
+                                <label><input type="radio" name="coreIT" value="អាចធ្វើបាន" disabled /> អាចធ្វើបាន</label>
+                                <label><input type="radio" name="coreIT" value="មិនអាចធ្វើបាន" disabled /> មិនអាច</label>
+                            </div>
+                            <input type="text" id="coreITReason" placeholder="ត្រូវការពេល..." disabled style="width:100%; padding:6px 10px; border:1px solid #d0d9e6; border-radius:6px; margin-top:4px; background:#f8fafc;" />
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                        <div>
+                            <label style="font-weight:600; font-size:14px; color:#0b3b5a;">ការសម្រេចចុងក្រោយ</label>
+                            <div class="options-grid" style="gap:6px 20px; padding-top:2px;">
+                                <label><input type="radio" name="coreFinal" value="អនុម័ត" disabled /> អនុម័ត (Approved)</label>
+                                <label><input type="radio" name="coreFinal" value="បដិសេធ" disabled /> បដិសេធ (Rejected)</label>
+                                <label><input type="radio" name="coreFinal" value="តម្កល់សិន" disabled /> តម្កល់សិន (Pending)</label>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="font-weight:600; font-size:14px; color:#0b3b5a;">ថ្ងៃទី</label>
+                            <input type="date" id="coreFinalDate" name="coreFinalDate" disabled style="width:100%; padding:8px 12px; border:1px solid #d0d9e6; border-radius:6px; background:#f8fafc;" />
+                            <div style="margin-top:6px; font-size:14px; color:#1a3b55; font-weight:500;">
+                                ប្រធានក្រុមការងារបង្គោល EMR<br />
+                                <span style="font-weight:400;">វេជ្ជបណ្ឌិត យៀប គង់</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="actions">
+                    <button type="reset" class="btn btn-secondary">🔄 សម្អាតទម្រង់</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">📤 បញ្ជូនសំណើ</button>
+                </div>
+
+                <div id="formMessage" class="message"></div>
+            </form>
+        </div>
+
+        <!-- ─── REQUEST LIST VIEW ─── -->
+        <div id="requestListView">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+                <h2 style="color:#1a5276; font-size:20px;">📋 សំណើទាំងអស់</h2>
+                <div class="list-actions">
+                    <button class="btn btn-success" id="exportCsvBtn">📥 ទាញយក CSV</button>
+                    <button class="btn btn-secondary" id="refreshListBtn">🔄 ធ្វើឱ្យស្រស់</button>
+                </div>
+            </div>
+            <div class="list-stats" id="listStats">កំពុងផ្ទុក...</div>
+            <div class="table-wrapper" id="tableWrapper">
+                <div class="empty-message">កំពុងផ្ទុកទិន្នន័យ...</div>
+            </div>
+            <div class="back-link" id="backToFormBtn">← ត្រឡប់ទៅទម្រង់ស្នើសុំ</div>
+        </div>
+
+        <div style="margin-top:28px; font-size:13px; color:#6b7a8f; text-align:center; border-top:1px solid #e2e8f0; padding-top:20px;">
+            <span>💡 ប្តូរទៅ Support Mode ដើម្បីមើលសំណើទាំងអស់</span>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ── Configuration ──
+            const CORE_PASSWORD = 'emr2026';
+            // Updated with your new deployment URL
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwH5AEpixVkUIe1bVGYHF4HQI5friulEaIAxfrQXK5xUPG1m3moSDY_nsLy91bSx0XI/exec';
+
+            // ── DOM refs ──
+            const form = document.getElementById('requestForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const messageEl = document.getElementById('formMessage');
+
+            const roleBadge = document.getElementById('roleBadge');
+            const roleLabel = document.getElementById('roleLabel');
+            const roleHint = document.getElementById('roleHint');
+            const switchBtn = document.getElementById('switchRoleBtn');
+            const viewRequestsBtn = document.getElementById('viewRequestsBtn');
+
+            const formView = document.getElementById('formView');
+            const requestListView = document.getElementById('requestListView');
+            const backToFormBtn = document.getElementById('backToFormBtn');
+            const refreshListBtn = document.getElementById('refreshListBtn');
+            const exportCsvBtn = document.getElementById('exportCsvBtn');
+            const tableWrapper = document.getElementById('tableWrapper');
+            const listStats = document.getElementById('listStats');
+
+            // All fields in Part 1-3 (requester fields)
+            const requesterFields = document.querySelectorAll('#part1 input, #part1 select, #part1 textarea, #part2 input, #part2 select, #part2 textarea, #part3 input, #part3 select, #part3 textarea, #partSign input, #partSign select, #partSign textarea');
+            const coreFields = document.querySelectorAll('#part4 input, #part4 select, #part4 textarea');
+            const otherCheck = document.getElementById('otherTypeCheck');
+            const otherText = document.getElementById('otherTypeText');
+
+            let currentRole = 'staff';
+            let allData = [];
+
+            // ── Helpers ──
+            function setRole(role) {
+                currentRole = role;
+                if (role === 'staff') {
+                    requesterFields.forEach(el => el.disabled = false);
+                    coreFields.forEach(el => el.disabled = true);
+                    document.getElementById('part4').classList.remove('support-active');
+                    roleBadge.className = 'role-badge staff';
+                    roleLabel.textContent = 'ប្រតិបត្តិករ (បំពេញសំណើ)';
+                    roleHint.textContent = 'បំពេញព័ត៌មានផ្នែកទី ១–៣';
+                    switchBtn.textContent = '🔐 ប្តូរទៅក្រុមគាំទ្រ';
+                    switchBtn.className = 'btn-sm unlock';
+                    viewRequestsBtn.style.display = 'none';
+                    if (otherCheck.checked) otherText.disabled = false;
+                    else otherText.disabled = true;
+                    if (requestListView.classList.contains('active')) {
+                        toggleView(false);
+                    }
+                } else {
+                    requesterFields.forEach(el => el.disabled = true);
+                    coreFields.forEach(el => el.disabled = false);
+                    document.getElementById('part4').classList.add('support-active');
+                    roleBadge.className = 'role-badge support';
+                    roleLabel.textContent = 'ក្រុមគាំទ្រ (វាយតម្លៃសំណើ)';
+                    roleHint.textContent = 'បំពេញផ្នែកវាយតម្លៃ (ផ្នែកទី៤)';
+                    switchBtn.textContent = '🔒 ត្រឡប់ទៅប្រតិបត្តិករ';
+                    switchBtn.className = 'btn-sm support-active';
+                    viewRequestsBtn.style.display = 'inline-block';
+                    otherText.disabled = true;
+                }
+            }
+
+            function toggleView(showList) {
+                if (showList) {
+                    formView.style.display = 'none';
+                    requestListView.classList.add('active');
+                    requestListView.style.display = 'block';
+                    fetchData();
+                } else {
+                    formView.style.display = 'block';
+                    requestListView.classList.remove('active');
+                    requestListView.style.display = 'none';
+                }
+            }
+
+            function showMessage(text, type) {
+                messageEl.textContent = text;
+                messageEl.className = 'message show ' + type;
+                clearTimeout(window._msgTimer);
+                window._msgTimer = setTimeout(() => {
+                    messageEl.className = 'message';
+                }, 7000);
+            }
+
+            function getSelectedTypes() {
+                const checks = document.querySelectorAll('input[name="requestType"]:checked');
+                const values = [];
+                checks.forEach(cb => {
+                    if (cb.value === 'ផ្សេងៗ' && otherText.value.trim()) {
+                        values.push('ផ្សេងៗ: ' + otherText.value.trim());
+                    } else if (cb.value !== 'ផ្សេងៗ') {
+                        values.push(cb.value);
+                    }
+                });
+                return values.length ? values.join(', ') : 'មិនបានជ្រើសរើស';
+            }
+
+            function getAttachment() {
+                const radio = document.querySelector('input[name="attachments"]:checked');
+                return radio ? radio.value : 'គ្មាន';
+            }
+
+            // ── Fetch data from Google Sheet ──
+            async function fetchData() {
+                tableWrapper.innerHTML = '<div class="empty-message">កំពុងផ្ទុកទិន្នន័យ...</div>';
+                listStats.textContent = 'កំពុងផ្ទុក...';
+                try {
+                    const resp = await fetch(SCRIPT_URL, {
+                        method: 'GET',
+                        mode: 'cors'
+                    });
+                    const json = await resp.json();
+                    if (json.result === 'success' && json.data) {
+                        allData = json.data;
+                        renderTable(allData);
+                        listStats.textContent = `សរុបចំនួន ${allData.length} សំណើ`;
+                    } else {
+                        throw new Error(json.message || 'Failed to fetch data');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    tableWrapper.innerHTML = `<div class="empty-message">❌ មិនអាចផ្ទុកទិន្នន័យបានទេ។ សូមព្យាយាមម្តងទៀត។</div>`;
+                    listStats.textContent = 'បរាជ័យ';
+                }
+            }
+
+            function renderTable(data) {
+                if (!data || data.length === 0) {
+                    tableWrapper.innerHTML = '<div class="empty-message">មិនមានសំណើនៅឡើយទេ។</div>';
+                    return;
+                }
+                const headers = Object.keys(data[0]);
+                let html = '<table><thead><tr>';
+                headers.forEach(h => {
+                    html += `<th>${h}</th>`;
+                });
+                html += '</tr></thead><tbody>';
+                data.forEach(row => {
+                    html += '<tr>';
+                    headers.forEach(h => {
+                        const val = row[h] || '';
+                        html += `<td>${val}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                html += '</tbody></table>';
+                tableWrapper.innerHTML = html;
+            }
+
+            // ── Export CSV ──
+            function exportCSV() {
+                if (!allData || allData.length === 0) {
+                    alert('គ្មានទិន្នន័យដើម្បីទាញយកទេ។');
+                    return;
+                }
+                const headers = Object.keys(allData[0]);
+                let csv = headers.join(',') + '\n';
+                allData.forEach(row => {
+                    const values = headers.map(h => {
+                        let val = row[h] || '';
+                        if (typeof val === 'string' && (val.includes(',') || val.includes('"') || val.includes('\n'))) {
+                            val = `"${val.replace(/"/g, '""')}"`;
+                        }
+                        return val;
+                    });
+                    csv += values.join(',') + '\n';
+                });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.href = url;
+                link.setAttribute('download', 'EMR_Requests.csv');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }
+
+            // ── Switch role logic ──
+            function toggleRole() {
+                if (currentRole === 'staff') {
+                    const pwd = prompt('បញ្ចូលពាក្យសម្ងាត់សម្រាប់ក្រុមគាំទ្រ (Enter support password):');
+                    if (pwd === null) return;
+                    if (pwd === CORE_PASSWORD) {
+                        setRole('support');
+                        showMessage('✅ បានប្តូរទៅ Support Mode ដោយជោគជ័យ។', 'success');
+                    } else {
+                        showMessage('❌ ពាក្យសម្ងាត់មិនត្រឹមត្រូវ។', 'error');
+                    }
+                } else {
+                    if (confirm('តើលោកអ្នកចង់ត្រឡប់ទៅ Staff Mode ដែរឬទេ?')) {
+                        setRole('staff');
+                        showMessage('🔄 បានត្រឡប់ទៅ Staff Mode វិញ។', 'success');
+                    }
+                }
+            }
+
+            // ── Init ──
+            function init() {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('requestDate').value = today;
+                document.getElementById('sigRequesterDate').value = today;
+                document.getElementById('sigHeadDate').value = today;
+
+                setRole('staff');
+
+                otherCheck.addEventListener('change', function() {
+                    if (currentRole === 'staff') {
+                        if (this.checked) { otherText.disabled = false;
+                            otherText.focus(); } else { otherText.disabled = true;
+                            otherText.value = ''; }
+                    }
+                });
+                otherText.disabled = true;
+
+                switchBtn.addEventListener('click', toggleRole);
+
+                viewRequestsBtn.addEventListener('click', function() {
+                    if (currentRole === 'support') {
+                        toggleView(true);
+                    } else {
+                        showMessage('⚠️ សូមប្តូរទៅ Support Mode មុនពេលមើលសំណើ។', 'error');
+                    }
+                });
+
+                backToFormBtn.addEventListener('click', function() {
+                    toggleView(false);
+                });
+
+                refreshListBtn.addEventListener('click', function() {
+                    if (currentRole === 'support') {
+                        fetchData();
+                    }
+                });
+
+                exportCsvBtn.addEventListener('click', exportCSV);
+
+                // Reset button
+                form.querySelector('button[type="reset"]').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('តើលោកអ្នកចង់សម្អាតទិន្នន័យទាំងអស់ក្នុងទម្រង់នេះមែនទេ?')) {
+                        form.reset();
+                        document.getElementById('requestDate').value = today;
+                        document.getElementById('sigRequesterDate').value = today;
+                        document.getElementById('sigHeadDate').value = today;
+                        document.getElementById('coreReceivedDate').value = '';
+                        document.getElementById('coreFinalDate').value = '';
+                        document.querySelector('input[name="attachments"][value="គ្មាន"]').checked = true;
+                        otherText.value = '';
+                        otherCheck.checked = false;
+                        otherText.disabled = true;
+                        document.querySelectorAll('#part4 input[type="radio"]').forEach(r => r.checked = false);
+                        document.querySelectorAll('#part4 input[type="text"]').forEach(t => t.value = '');
+                        messageEl.className = 'message';
+                        showMessage('🧹 ទម្រង់ត្រូវបានសម្អាតរួចរាល់។', 'success');
+                    }
+                });
+
+                // Submit
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    if (currentRole === 'staff') {
+                        if (!form.checkValidity()) {
+                            form.reportValidity();
+                            return;
+                        }
+                        const types = document.querySelectorAll('input[name="requestType"]:checked');
+                        if (types.length === 0) {
+                            showMessage('⚠️ សូមជ្រើសរើសប្រភេទនៃការស្នើសុំយ៉ាងហោចណាស់មួយ។', 'error');
+                            return;
+                        }
+                        if (otherCheck.checked && !otherText.value.trim()) {
+                            showMessage('⚠️ សូមបញ្ជាក់ព័ត៌មានសម្រាប់ "ផ្សេងៗ"។', 'error');
+                            otherText.focus();
+                            return;
+                        }
+                    }
+
+                    const payload = {
+                        requesterName: document.getElementById('requesterName').value.trim(),
+                        requesterRole: document.getElementById('requesterRole').value,
+                        department: document.getElementById('department').value.trim(),
+                        phone: document.getElementById('phone').value.trim(),
+                        requestDate: document.getElementById('requestDate').value,
+                        requestTypes: getSelectedTypes(),
+                        location: document.getElementById('location').value.trim(),
+                        description: document.getElementById('description').value.trim(),
+                        benefits: document.getElementById('benefits').value.trim(),
+                        attachments: getAttachment(),
+                        sigRequesterName: document.getElementById('sigRequesterName').value.trim(),
+                        sigRequesterDate: document.getElementById('sigRequesterDate').value,
+                        sigHeadName: document.getElementById('sigHeadName').value.trim(),
+                        sigHeadDate: document.getElementById('sigHeadDate').value,
+                        coreReceivedDate: document.getElementById('coreReceivedDate').value || '',
+                        coreReceivedBy: document.getElementById('coreReceivedBy').value || '',
+                        coreSignature: document.getElementById('coreSignature').value || '',
+                        coreClin: document.querySelector('input[name="coreClin"]:checked')?.value || '',
+                        coreClinReason: document.getElementById('coreClinReason').value || '',
+                        coreNurse: document.querySelector('input[name="coreNurse"]:checked')?.value || '',
+                        coreNurseReason: document.getElementById('coreNurseReason').value || '',
+                        coreIT: document.querySelector('input[name="coreIT"]:checked')?.value || '',
+                        coreITReason: document.getElementById('coreITReason').value || '',
+                        coreFinal: document.querySelector('input[name="coreFinal"]:checked')?.value || '',
+                        coreFinalDate: document.getElementById('coreFinalDate').value || '',
+                        submittedRole: currentRole,
+                    };
+
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner"></span> កំពុងផ្ញើ...';
+                    showMessage('⏳ កំពុងផ្ញើសំណើ...', 'loading');
+
+                    try {
+                        await fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams(payload).toString(),
+                        });
+                        showMessage('✅ សំណើរបស់លោកអ្នកត្រូវបានបញ្ជូនដោយជោគជ័យ!', 'success');
+                        if (currentRole === 'staff') {
+                            form.reset();
+                            document.getElementById('requestDate').value = today;
+                            document.getElementById('sigRequesterDate').value = today;
+                            document.getElementById('sigHeadDate').value = today;
+                            document.querySelector('input[name="attachments"][value="គ្មាន"]').checked = true;
+                            otherText.value = '';
+                            otherCheck.checked = false;
+                            otherText.disabled = true;
+                        }
+                        document.getElementById('coreReceivedDate').value = '';
+                        document.getElementById('coreFinalDate').value = '';
+                        document.querySelectorAll('#part4 input[type="radio"]').forEach(r => r.checked = false);
+                        document.querySelectorAll('#part4 input[type="text"]').forEach(t => t.value = '');
+                    } catch (err) {
+                        console.error(err);
+                        showMessage('❌ មានបញ្ហាក្នុងការផ្ញើសំណើ។', 'error');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '📤 បញ្ជូនសំណើ';
+                    }
+                });
+            }
+
+            init();
+        })();
+    </script>
+
+</body>
+</html>
